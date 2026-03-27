@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SAMA — Service &amp; Mercy Alliance</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Cormorant Garamond', 'serif'],
+            body: ['DM Sans', 'sans-serif'],
+          },
+          colors: {
+            stone: {
+              50:  '#faf9f7',
+              100: '#f2ede8',
+              200: '#e5ddd5',
+              300: '#d1c4b8',
+              400: '#b8a496',
+              500: '#9e8577',
+              600: '#856b5d',
+              700: '#6d554a',
+              800: '#5a4540',
+              900: '#4c3c38',
+            },
+            moss:  { DEFAULT: '#4a5e4a', light: '#6b7f6b', dark: '#344034' },
+            gold:  { DEFAULT: '#b89a5a', light: '#d4b87a', dark: '#8a7040' },
+            cream: '#faf8f4',
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: #faf8f4;
+      color: #3a3330;
+    }
+
+    /* ── Arabesque divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      color: #b89a5a;
+      margin: 0 auto;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #b89a5a88, transparent);
+    }
+
+    /* ── Sticky header ── */
+    #site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px) saturate(1.6);
+      -webkit-backdrop-filter: blur(14px) saturate(1.6);
+      background: rgba(250,248,244,0.88);
+      border-bottom: 1px solid #e5ddd5;
+      transition: box-shadow 0.3s ease;
+    }
+    #site-header.scrolled { box-shadow: 0 2px 24px rgba(74,94,74,0.08); }
+
+    /* ── Hero ── */
+    .hero-bg {
+      background-image:
+        radial-gradient(ellipse 80% 60% at 60% 40%, rgba(74,94,74,0.09) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 15% 80%, rgba(184,154,90,0.08) 0%, transparent 60%),
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b89a5a' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      background-color: #faf8f4;
+    }
+
+    /* ── Section fade-in ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Prayer time card ── */
+    .prayer-row:not(:last-child) { border-bottom: 1px solid #e5ddd5; }
+    .prayer-row:hover { background: rgba(184,154,90,0.05); }
+
+    /* ── Card hover ── */
+    .program-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .program-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(74,94,74,0.10);
+    }
+
+    /* ── Donate button pulse ── */
+    @keyframes gentle-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(184,154,90,0.4); }
+      50% { box-shadow: 0 0 0 6px rgba(184,154,90,0); }
+    }
+    .donate-btn-pulse { animation: gentle-pulse 2.8s ease-in-out infinite; }
+
+    /* ── Mobile nav ── */
+    #mobile-menu { display: none; }
+    #mobile-menu.open { display: flex; }
+
+    /* ── Announcement pulse dot ── */
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .blink-dot { animation: blink 1.8s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════
+     STICKY HEADER
+════════════════════════════════════════════════════ -->
+<header id="site-header">
+  <!-- Contact top bar -->
+  <div class="hidden md:flex items-center justify-end gap-6 px-5 lg:px-8 py-1.5 border-b border-stone-200/60" style="background:rgba(250,248,244,0.6);">
+    <a href="https://maps.google.com/?q=1822+Huth+Rd,+Grand+Island,+NY+14072" target="_blank" rel="noopener"
+       class="flex items-center gap-1.5 font-body text-xs text-stone-400 hover:text-moss transition-colors">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      1822 Huth Rd, Grand Island, NY 14072
+    </a>
+    <a href="tel:+17168306559"
+       class="flex items-center gap-1.5 font-body text-xs text-stone-400 hover:text-moss transition-colors">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+      (716) 830-6559
+    </a>
+  </div>
+  <div class="max-w-6xl mx-auto px-5 lg:px-8 h-16 flex items-center justify-between gap-4">
+
+    <!-- Logo -->
+    <a href="#" class="flex items-center shrink-0">
+      <img src="data:image/png;base64,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" alt="SAMA — Service and Mercy Alliance" style="height:56px; width:auto;" />
+    </a>
+
+    <!-- Center nav (desktop) -->
+    <nav class="hidden md:flex items-center gap-8">
+      <a href="#prayer-times" class="font-body text-sm text-stone-600 hover:text-moss transition-colors duration-200 tracking-wide">Prayer Times</a>
+      <a href="#programs" class="font-body text-sm text-stone-600 hover:text-moss transition-colors duration-200 tracking-wide">Programs</a>
+      <a href="#community" class="font-body text-sm text-stone-600 hover:text-moss transition-colors duration-200 tracking-wide">Join the Community</a>
+      <a href="#contact" class="font-body text-sm text-stone-600 hover:text-moss transition-colors duration-200 tracking-wide">Contact</a>
+    </nav>
+
+    <!-- Right: Donate + mobile hamburger -->
+    <div class="flex items-center gap-3">
+      <a href="#donate" class="donate-btn-pulse hidden sm:inline-flex items-center gap-2 bg-gold text-white text-sm font-body font-medium px-5 py-2 rounded-full transition-all hover:bg-gold-dark">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.5C6.2 17.6 2 13.5 2 9a5 5 0 0 1 10 0 5 5 0 0 1 10 0c0 4.5-4.2 8.6-10 12.5z"/></svg>
+        Donate
+      </a>
+      <!-- Mobile hamburger -->
+      <button id="hamburger" aria-label="Open menu" class="md:hidden p-1.5 rounded text-stone-600 hover:text-moss">
+        <svg id="ham-icon" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg id="close-icon" class="hidden" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="md:hidden flex-col bg-cream border-t border-stone-200 px-5 pb-5 pt-2 gap-4">
+    <a href="#prayer-times" class="font-body text-sm text-stone-700 hover:text-moss py-1" onclick="closeMobileMenu()">Prayer Times</a>
+    <a href="#programs" class="font-body text-sm text-stone-700 hover:text-moss py-1" onclick="closeMobileMenu()">Programs</a>
+    <a href="#community" class="font-body text-sm text-stone-700 hover:text-moss py-1" onclick="closeMobileMenu()">Join the Community</a>
+    <a href="#contact" class="font-body text-sm text-stone-700 hover:text-moss py-1" onclick="closeMobileMenu()">Contact</a>
+    <a href="#donate" class="w-full text-center bg-gold text-white text-sm font-medium px-5 py-2.5 rounded-full" onclick="closeMobileMenu()">Donate</a>
+  </div>
+</header>
+
+
+<!-- ════════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════ -->
+<section class="hero-bg py-28 md:py-36 px-5 text-center fade-in">
+  <p class="font-body text-xs tracking-[0.25em] text-gold uppercase mb-5">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم</p>
+  <h1 class="font-display text-stone-800 leading-tight max-w-3xl mx-auto mb-6 text-center">
+    <span class="block font-display italic font-semibold text-5xl md:text-6xl tracking-wide mb-1" style="font-style:italic; letter-spacing:0.02em;">SAMA</span>
+    <span class="block text-4xl md:text-6xl font-normal">A Home for Every</span>
+    <span class="block text-4xl md:text-6xl"><em>Heart Seeking Light</em></span>
+  </h1>
+  <p class="font-body text-stone-500 text-base md:text-lg max-w-xl mx-auto leading-relaxed mb-10">
+    To provide a place of fellowship where Muslims can come together to pray and positively engage and collaborate with the larger Grand Island community in interfaith activities, service and acts of good work designed to positively impact our community.
+  </p>
+  <div class="flex flex-wrap items-center justify-center gap-4">
+    <a href="#community" class="bg-moss text-white font-body text-sm font-medium px-7 py-3 rounded-full hover:bg-moss-dark transition-colors">
+      Join the Community
+    </a>
+    <a href="#donate" class="donate-btn-pulse bg-gold text-white font-body text-sm font-medium px-7 py-3 rounded-full hover:bg-gold-dark transition-colors">
+      Donate Online
+    </a>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════
+     PRAYER TIMES
+════════════════════════════════════════════════════ -->
+<section id="prayer-times" class="py-20 px-5 bg-white">
+  <div class="max-w-5xl mx-auto">
+
+    <div class="divider mb-14 fade-in">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="#b89a5a" class="shrink-0"><path d="M12 2a7 7 0 1 1 0 14A7 7 0 0 1 12 2zM12 0a9 9 0 1 0 0 18A9 9 0 0 0 12 0zm0 4v9l5 3-1 1.73-6-3.73V4h2z"/></svg>
+      <h2 class="font-display text-3xl md:text-4xl text-stone-800 text-center px-4">Prayer Times</h2>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-8 fade-in">
+
+      <!-- Salah table -->
+      <div class="lg:col-span-2 rounded-2xl border border-stone-200 overflow-hidden">
+        <div class="bg-moss px-6 py-4 grid grid-cols-3 text-xs font-body font-medium text-white/80 tracking-widest uppercase">
+          <span>Prayer</span>
+          <span class="text-center">Adhan</span>
+          <span class="text-right">Iqamah</span>
+        </div>
+        <!-- rows -->
+        <div class="divide-y divide-stone-100">
+          <!-- Fajr -->
+          <div class="prayer-row grid grid-cols-3 px-6 py-4 transition-colors">
+            <span class="font-display text-lg text-stone-800">Fajr</span>
+            <span class="font-body text-stone-500 text-center text-sm self-center">5:20 AM</span>
+            <span class="font-body text-stone-800 text-right text-sm self-center font-medium">5:40 AM</span>
+          </div>
+          <!-- Dhuhr -->
+          <div class="prayer-row grid grid-cols-3 px-6 py-4 transition-colors">
+            <span class="font-display text-lg text-stone-800">Dhuhr</span>
+            <span class="font-body text-stone-500 text-center text-sm self-center">1:15 PM</span>
+            <span class="font-body text-stone-800 text-right text-sm self-center font-medium">1:30 PM</span>
+          </div>
+          <!-- Asr -->
+          <div class="prayer-row grid grid-cols-3 px-6 py-4 transition-colors">
+            <span class="font-display text-lg text-stone-800">Asr</span>
+            <span class="font-body text-stone-500 text-center text-sm self-center">4:45 PM</span>
+            <span class="font-body text-stone-800 text-right text-sm self-center font-medium">5:00 PM</span>
+          </div>
+          <!-- Maghrib -->
+          <div class="prayer-row grid grid-cols-3 px-6 py-4 transition-colors">
+            <span class="font-display text-lg text-stone-800">Maghrib</span>
+            <span class="font-body text-stone-500 text-center text-sm self-center">7:58 PM</span>
+            <span class="font-body text-stone-800 text-right text-sm self-center font-medium">8:05 PM</span>
+          </div>
+          <!-- Isha -->
+          <div class="prayer-row grid grid-cols-3 px-6 py-4 transition-colors">
+            <span class="font-display text-lg text-stone-800">Isha</span>
+            <span class="font-body text-stone-500 text-center text-sm self-center">9:30 PM</span>
+            <span class="font-body text-stone-800 text-right text-sm self-center font-medium">9:45 PM</span>
+          </div>
+        </div>
+
+        <!-- Access note -->
+        <div class="mt-4 bg-stone-50 border border-stone-200 rounded-xl px-5 py-4 text-sm font-body text-stone-600 leading-relaxed">
+          For access to the musallah and our community WhatsApp group, please reach out to us at
+          <a href="tel:+17168306559" class="text-moss font-medium hover:underline">(716) 830-6559</a>.
+        </div>
+      </div>
+
+      <!-- Jummah card -->
+      <div class="rounded-2xl bg-moss text-white p-7 flex flex-col justify-between">
+        <div>
+          <p class="font-body text-xs tracking-widest uppercase text-white/60 mb-2">Every Friday</p>
+          <h3 class="font-display text-3xl mb-5 leading-tight">Jumu'ah<br/>Prayer</h3>
+          <div class="space-y-3 font-body text-sm">
+            <div class="flex justify-between border-b border-white/20 pb-2">
+              <span class="text-white/70">Khutbah</span>
+              <span class="font-medium">1:45 PM</span>
+            </div>
+            <div class="flex justify-between border-b border-white/20 pb-2">
+              <span class="text-white/70">Salah</span>
+              <span class="font-medium">2:15 PM</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════
+     ANNOUNCEMENTS
+════════════════════════════════════════════════════ -->
+<section class="py-20 px-5 bg-cream">
+  <div class="max-w-5xl mx-auto">
+
+    <div class="divider mb-14 fade-in">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="#b89a5a"><path d="M3 8v8h4l5 4V4L7 8H3zm13 4a4 4 0 0 0-2-3.46V15.46A4 4 0 0 0 16 12zm-2-8.86v2.06A6 6 0 0 1 18 12a6 6 0 0 1-4 5.8v2.06A8 8 0 0 0 20 12a8 8 0 0 0-6-7.86z"/></svg>
+      <h2 class="font-display text-3xl md:text-4xl text-stone-800 text-center px-4">Announcements</h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 fade-in">
+
+      <!-- Card 1: Neighbors Foundation -->
+      <div class="bg-white rounded-2xl p-6 border border-stone-200 relative overflow-hidden">
+        <div class="absolute top-5 right-5 flex items-center gap-1.5">
+          <span class="blink-dot w-2 h-2 rounded-full bg-gold inline-block"></span>
+          <span class="text-[10px] font-body text-gold uppercase tracking-widest">New</span>
+        </div>
+        <p class="font-body text-xs text-stone-400 uppercase tracking-widest mb-2">In the News</p>
+        <h3 class="font-display text-xl text-stone-800 mb-2">SAMA Visits the Neighbors Foundation</h3>
+        <p class="font-body text-stone-500 text-sm leading-relaxed">
+          SAMA was recently featured in WNY Papers for our donation visit to the Neighbors Foundation — a reflection of our commitment to serving the wider Grand Island community.
+        </p>
+        <a href="https://www.wnypapers.com/news/article/featured/2026/03/13/165543/island-groups-donate-to-neighbors-foundation?fbclid=IwY2xjawQzegdleHRuA2FlbQIxMQBzcnRjBmFwcF9pZBAyMjIwMzkxNzg4MjAwODkyAAEeIou2xcyYtGojcB361DgkcMmRxOHbd9m-2yEy6xMJy8MWCuzGft19CLcIBFQ_aem_J3eXnTLVvWJF8jOc-zbotg" target="_blank" rel="noopener" class="inline-block mt-4 text-gold font-body text-sm font-medium hover:underline">Read the article →</a>
+      </div>
+
+      <!-- Card 2: Eid -->
+      <div class="bg-white rounded-2xl p-6 border border-stone-200">
+        <p class="font-body text-xs text-stone-400 uppercase tracking-widest mb-2">Celebration</p>
+        <h3 class="font-display text-xl text-stone-800 mb-2">SAMA Celebrates Eid</h3>
+        <p class="font-body text-stone-500 text-sm leading-relaxed">
+          Alhamdulillah! SAMA hosted a large community Eid Salah followed by a community brunch — and it was a beautiful gathering. This is becoming a cherished SAMA tradition, and we look forward to continuing it with our growing community.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════
+     PROGRAMS
+════════════════════════════════════════════════════ -->
+<section id="programs" class="py-20 px-5 bg-white">
+  <div class="max-w-5xl mx-auto">
+
+    <div class="divider mb-5 fade-in">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="#b89a5a"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+      <h2 class="font-display text-3xl md:text-4xl text-stone-800 text-center px-4">Programs &amp; Services</h2>
+    </div>
+    <p class="font-body text-stone-500 text-center text-sm max-w-lg mx-auto mb-14 fade-in">
+      Rooted in learning and fellowship — something for every member of the family.
+    </p>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 fade-in">
+
+      <!-- Weekend Islamic School -->
+      <div class="program-card bg-cream rounded-2xl p-6 border border-stone-200">
+        <div class="w-10 h-10 bg-moss/10 rounded-xl flex items-center justify-center mb-4">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#4a5e4a"><path d="M6 2v6l2 2-2 2v6l18-8L6 2zM4 0L0 12l4 12V0z" opacity=".3"/><path d="M5 3.27V9l1.5 1.5L5 12v5.73L21 12 5 3.27z"/></svg>
+        </div>
+        <h3 class="font-display text-xl text-stone-800 mb-2">Weekend Islamic School</h3>
+        <p class="font-body text-stone-500 text-sm leading-relaxed mb-3">We are planning two classes for children aged 5–8 and 9–11 respectively. More info and registration forms coming soon.</p>
+        <span class="inline-block text-[11px] font-body bg-moss/10 text-moss px-3 py-1 rounded-full tracking-wide">Coming Soon</span>
+      </div>
+
+      <!-- New Muslim Support -->
+      <div class="program-card bg-cream rounded-2xl p-6 border border-stone-200">
+        <div class="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center mb-4">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#b89a5a"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        </div>
+        <h3 class="font-display text-xl text-stone-800 mb-2">New Muslim Support</h3>
+        <p class="font-body text-stone-500 text-sm leading-relaxed mb-3">Dedicated guidance and mentorship for those who have recently embraced Islam — practical, compassionate, and ongoing.</p>
+        <span class="inline-block text-[11px] font-body bg-gold/10 text-gold-dark px-3 py-1 rounded-full tracking-wide">By Appointment</span>
+      </div>
+
+      <!-- Youth Mentorship -->
+      <div class="program-card bg-cream rounded-2xl p-6 border border-stone-200">
+        <div class="w-10 h-10 bg-moss/10 rounded-xl flex items-center justify-center mb-4">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#4a5e4a"><path d="M11.5 2C6.81 2 3 5.81 3 10.5S6.81 19 11.5 19h.5v3c4.86-2.34 8-7 8-11.5C20 5.81 16.19 2 11.5 2zm1 14.5h-2v-2h2v2zm0-4h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5z"/></svg>
+        </div>
+        <h3 class="font-display text-xl text-stone-800 mb-2">Youth &amp; Young Professional Mentorship</h3>
+        <p class="font-body text-stone-500 text-sm leading-relaxed mb-3">We will start a community mentorship network for locals in high school, college, or early career. Kick-off meeting Saturday April 4th at 1:00 PM.</p>
+        <span class="inline-block text-[11px] font-body bg-moss/10 text-moss px-3 py-1 rounded-full tracking-wide">April 4th · 1:00 PM</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════
+     JOIN THE COMMUNITY
+════════════════════════════════════════════════════ -->
+<section id="community" class="py-24 px-5 bg-white">
+  <div class="max-w-3xl mx-auto text-center fade-in">
+
+    <div class="divider mb-10">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="#b89a5a"><path d="M17.5 12A5.5 5.5 0 0 1 12 17.5 5.5 5.5 0 0 1 6.5 12 5.5 5.5 0 0 1 12 6.5 5.5 5.5 0 0 1 17.5 12M12 2a10 10 0 0 0-10 10 10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2z"/></svg>
+      <h2 class="font-display text-3xl md:text-4xl text-stone-800 px-4">Join the Community</h2>
+    </div>
+
+    <p class="font-body text-stone-500 leading-relaxed mb-10">
+      Stay close to the masjid, connect with your fellow Muslims on Grand Island. Get updates and event announcements straight to your phone.
+    </p>
+
+    <div class="grid sm:grid-cols-2 gap-5">
+      <!-- WhatsApp -->
+      <a href="https://chat.whatsapp.com/IYvETlqZOOv6JA7ERe3qq5?mode=gi_t" target="_blank" rel="noopener"
+         class="flex items-center gap-4 bg-cream rounded-2xl border border-stone-200 p-5 hover:border-moss hover:shadow-sm transition-all group">
+        <div class="w-12 h-12 rounded-xl bg-[#25D366]/10 flex items-center justify-center shrink-0">
+          <svg width="24" height="24" viewBox="0 0 32 32" fill="#25D366"><path d="M16 3C8.837 3 3 8.837 3 16c0 2.337.64 4.53 1.757 6.416L3 29l6.812-1.73A12.93 12.93 0 0 0 16 29c7.163 0 13-5.837 13-13S23.163 3 16 3zm6.455 18.232c-.27.759-1.578 1.45-2.162 1.54-.552.083-1.25.118-2.02-.127-.466-.147-1.065-.344-1.83-.674-3.22-1.39-5.32-4.62-5.48-4.836-.16-.214-1.3-1.73-1.3-3.3 0-1.57.82-2.345 1.112-2.665.288-.32.63-.4.84-.4.21 0 .42.002.605.01.194.01.455-.074.712.544.27.64.917 2.21.998 2.372.08.16.134.347.027.558-.107.213-.16.345-.32.533l-.48.558c-.16.16-.327.335-.14.657.187.32.832 1.37 1.786 2.22 1.228 1.09 2.264 1.427 2.584 1.587.32.16.505.134.694-.08.187-.213.8-.934 1.013-1.254.213-.32.425-.267.714-.16.29.107 1.84.867 2.16 1.024.32.16.533.24.613.373.08.133.08.773-.19 1.52z"/></svg>
+        </div>
+        <div class="text-left">
+          <p class="font-body font-medium text-stone-800 text-sm group-hover:text-moss transition-colors">Island Musallah Project</p>
+          <p class="font-body text-stone-400 text-xs">WhatsApp · Instant updates &amp; announcements</p>
+        </div>
+        <svg class="ml-auto text-stone-300 group-hover:text-moss transition-colors shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+
+      <!-- Facebook -->
+      <a href="https://www.facebook.com/share/g/1CNTQbqgkn/?mibextid=wwXIfr" target="_blank" rel="noopener"
+         class="flex items-center gap-4 bg-cream rounded-2xl border border-stone-200 p-5 hover:border-[#1877F2] hover:shadow-sm transition-all group">
+        <div class="w-12 h-12 rounded-xl bg-[#1877F2]/10 flex items-center justify-center shrink-0">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.404 18.627 0 12 0S0 5.404 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.931-1.956 1.886v2.268h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+        </div>
+        <div class="text-left">
+          <p class="font-body font-medium text-stone-800 text-sm group-hover:text-[#1877F2] transition-colors">Grand Island Musallah Community</p>
+          <p class="font-body text-stone-400 text-xs">Facebook · Events, photos &amp; community posts</p>
+        </div>
+        <svg class="ml-auto text-stone-300 group-hover:text-[#1877F2] transition-colors shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════
+     DONATE
+════════════════════════════════════════════════════ -->
+<section id="donate" class="py-20 px-5 bg-cream">
+  <div class="max-w-4xl mx-auto">
+
+    <div class="divider mb-5 fade-in">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="#b89a5a" class="shrink-0"><path d="M12 21.5C6.2 17.6 2 13.5 2 9a5 5 0 0 1 10 0 5 5 0 0 1 10 0c0 4.5-4.2 8.6-10 12.5z"/></svg>
+      <h2 class="font-display text-3xl md:text-4xl text-stone-800 text-center px-4">Donate</h2>
+    </div>
+    <p class="font-body text-stone-500 text-center text-sm max-w-lg mx-auto mb-14 fade-in">
+      Your generosity keeps this masjid thriving. Every contribution — large or small — is a sadaqa jariyah.
+    </p>
+
+    <div class="grid sm:grid-cols-2 gap-8 fade-in">
+
+      <!-- Sadaqa card -->
+      <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden program-card">
+        <div class="bg-moss px-7 py-6 text-white">
+          <div class="w-10 h-10 bg-white/15 rounded-xl flex items-center justify-center mb-4">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 21.5C6.2 17.6 2 13.5 2 9a5 5 0 0 1 10 0 5 5 0 0 1 10 0c0 4.5-4.2 8.6-10 12.5z"/></svg>
+          </div>
+          <h3 class="font-display text-2xl leading-snug mb-1">Sadaqa</h3>
+          <p class="font-body text-white/70 text-sm">General charity &amp; ongoing support</p>
+        </div>
+        <div class="px-7 py-6">
+          <p class="font-body text-stone-500 text-sm leading-relaxed mb-6">
+            Support the day-to-day operations of the masjid — utilities, maintenance, programs, and community services. No amount is too small.
+          </p>
+          <a href="https://www.zeffy.com/en-US/donation-form/jummah-donation" target="_blank" rel="noopener"
+             class="block w-full text-center bg-moss text-white font-body text-sm font-medium px-6 py-3 rounded-xl hover:bg-moss-dark transition-colors">
+            Give Sadaqa via Zeffy
+          </a>
+          <p class="text-center text-[11px] text-stone-400 font-body mt-3">100% of your donation goes to the masjid — Zeffy charges us nothing.</p>
+        </div>
+      </div>
+
+      <!-- Building Fund card -->
+      <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden program-card">
+        <div class="bg-stone-800 px-7 py-6 text-white">
+          <div class="w-10 h-10 bg-white/15 rounded-xl flex items-center justify-center mb-4">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          </div>
+          <h3 class="font-display text-2xl leading-snug mb-1">Building Fund</h3>
+          <p class="font-body text-white/70 text-sm">Expansion &amp; facility improvements</p>
+        </div>
+        <div class="px-7 py-6">
+          <p class="font-body text-stone-500 text-sm leading-relaxed mb-6">
+            Help us build a better home for our community — new wudu facilities, an expanded sisters' section, and improved accessibility for all.
+          </p>
+          <a href="https://launchgood.com/IslandMusallah" target="_blank" rel="noopener"
+             class="block w-full text-center bg-gold text-white font-body text-sm font-medium px-6 py-3 rounded-xl hover:bg-gold-dark transition-colors donate-btn-pulse">
+            Give to Building Fund via LaunchGood
+          </a>
+          <p class="text-center text-[11px] text-stone-400 font-body mt-3">LaunchGood is a trusted Muslim crowdfunding platform.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════════ -->
+<footer id="contact" class="bg-stone-900 text-stone-300 pt-14 pb-8 px-5">
+  <div class="max-w-5xl mx-auto">
+
+    <div class="grid md:grid-cols-3 gap-10 mb-12">
+
+      <!-- Masjid info -->
+      <div>
+        <div class="mb-4">
+          <img src="data:image/png;base64,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" alt="SAMA — Service and Mercy Alliance" style="height:40px; width:auto;" />
+        </div>
+        <p class="font-body text-sm leading-relaxed text-stone-400 mb-4">
+          A place of fellowship where Muslims come together to pray and positively engage with the Grand Island community.
+        </p>
+        <p class="font-body text-xs text-stone-500">Open daily · Dawn to Night</p>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h4 class="font-body text-xs uppercase tracking-widest text-stone-500 mb-4">Contact</h4>
+        <ul class="space-y-3 font-body text-sm">
+          <li class="flex items-start gap-2.5 text-stone-400">
+            <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="#b89a5a"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <span>1822 Huth Rd, Grand Island, NY 14072</span>
+          </li>
+          <li class="flex items-center gap-2.5 text-stone-400">
+            <svg class="shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="#b89a5a"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+            <a href="tel:+17168306559" class="hover:text-gold transition-colors">(716) 830-6559</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Quick links -->
+      <div>
+        <h4 class="font-body text-xs uppercase tracking-widest text-stone-500 mb-4">Quick Links</h4>
+        <ul class="space-y-2.5 font-body text-sm">
+          <li><a href="#prayer-times" class="text-stone-400 hover:text-gold transition-colors">Prayer Times</a></li>
+          <li><a href="#programs" class="text-stone-400 hover:text-gold transition-colors">Programs</a></li>
+          <li><a href="#community" class="text-stone-400 hover:text-gold transition-colors">Join the Community</a></li>
+          <li><a href="#donate" class="text-stone-400 hover:text-gold transition-colors">Donate</a></li>
+          <li><a href="/cdn-cgi/l/email-protection#96fff8f0f9d6fbf7e5fcfff2fef7faf8f9f9e4b8f9e4f1" class="text-stone-400 hover:text-gold transition-colors">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Embedded Google Map placeholder -->
+    <div class="rounded-2xl overflow-hidden mb-10 border border-stone-700" style="height:200px;">
+      <iframe
+        title="SAMA — Service &amp; Mercy Alliance Location"
+        width="100%"
+        height="200"
+        style="border:0; filter: grayscale(60%) invert(5%);"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        src="https://maps.google.com/maps?q=1822+Huth+Rd,+Grand+Island,+NY+14072&output=embed">
+      </iframe>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="border-t border-stone-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p class="font-body text-xs text-stone-600 text-center">
+        © 2025 Service &amp; Mercy Alliance (SAMA). All rights reserved.
+      </p>
+      <p class="font-body text-xs text-stone-600">
+        <span class="text-gold">♥</span> Built with care for the community
+      </p>
+    </div>
+
+  </div>
+</footer>
+
+
+<!-- ════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════ -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // Sticky header shadow on scroll
+  const header = document.getElementById('site-header');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 10);
+  });
+
+  // Mobile menu toggle
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const hamIcon   = document.getElementById('ham-icon');
+  const closeIcon = document.getElementById('close-icon');
+
+  hamburger.addEventListener('click', () => {
+    const open = mobileMenu.classList.toggle('open');
+    hamIcon.classList.toggle('hidden', open);
+    closeIcon.classList.toggle('hidden', !open);
+  });
+
+  function closeMobileMenu() {
+    mobileMenu.classList.remove('open');
+    hamIcon.classList.remove('hidden');
+    closeIcon.classList.add('hidden');
+  }
+
+  // Scroll fade-in via IntersectionObserver
+  const fadeEls = document.querySelectorAll('.fade-in');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  fadeEls.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
